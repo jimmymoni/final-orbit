@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Toaster } from './components/ui/sonner';
 
 // Pages
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import TeamDashboard from './pages/TeamDashboard';
 import InquiryDashboard from './pages/InquiryDashboard';
 import InquiryDetailPage from './pages/InquiryDetailPage';
 import AppLibraryPage from './pages/AppLibraryPage';
@@ -12,7 +14,7 @@ import StatsPage from './pages/StatsPage';
 import AdminPage from './pages/AdminPage';
 
 // Layout
-import DashboardLayout from './components/layout/DashboardLayout';
+import AppLayout from './components/layout/AppLayout';
 
 const queryClient = new QueryClient();
 
@@ -44,65 +46,30 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Protected Routes */}
+            {/* Protected Routes - All use new AppLayout */}
             <Route
-              path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout />
+                  <AppLayout />
                 </ProtectedRoute>
               }
             >
-              <Route index element={<InquiryDashboard />} />
+              <Route path="/dashboard" element={<TeamDashboard />} />
+              <Route path="/inquiries" element={<InquiryDashboard />} />
+              <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
+              <Route path="/employees" element={<StatsPage />} />
+              <Route path="/apps" element={<AppLibraryPage />} />
+              <Route path="/apps/:id" element={<AppLibraryPage />} />
+              <Route path="/knowledge" element={<StatsPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/settings" element={<StatsPage />} />
+              <Route path="/profile" element={<StatsPage />} />
             </Route>
 
-            <Route
-              path="/inquiry/:id"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<InquiryDetailPage />} />
-            </Route>
-
-            <Route
-              path="/apps"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<AppLibraryPage />} />
-            </Route>
-
-            <Route
-              path="/stats"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<StatsPage />} />
-            </Route>
-
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<AdminPage />} />
-            </Route>
-
-            {/* Catch all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Catch all - redirect to dashboard if logged in, otherwise home */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
+          <Toaster />
         </Router>
       </AuthProvider>
     </QueryClientProvider>
