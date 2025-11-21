@@ -6,8 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
+import { Separator } from '../components/ui/separator';
 import { ArrowLeft, ExternalLink, Clock, User, Calendar, AlertCircle } from 'lucide-react';
 import { formatDate, timeAgo, isOverdue } from '../lib/utils';
+import SmartReplyPanel from '../components/inquiries/SmartReplyPanel';
+import RepliesSection from '../components/inquiries/RepliesSection';
 
 export default function InquiryDetailPage() {
   const { id } = useParams();
@@ -236,33 +239,48 @@ export default function InquiryDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Replies History */}
+          <RepliesSection inquiryId={id} />
+
           {/* Reply Section */}
           {inquiry.status === 'assigned' && inquiry.assigned_to === userProfile?.id && (
             <Card>
-              <CardHeader>
-                <CardTitle>Your Reply</CardTitle>
-                <CardDescription>
-                  Write your response here. After replying on Shopify Community, log your reply below.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  placeholder="Enter your reply text here..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  rows={8}
-                  className="font-mono text-sm"
-                />
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleSubmitReply}
-                    disabled={submitting}
-                  >
-                    {submitting ? 'Submitting...' : 'Mark as Replied'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <CardHeader>
+                  <CardTitle>Your Reply</CardTitle>
+                  <CardDescription>
+                    Use AI to generate smart reply suggestions or write your own response.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* AI Smart Reply Panel */}
+                  <SmartReplyPanel
+                    inquiry={inquiry}
+                    onUseReply={(reply) => setReplyText(reply)}
+                  />
+
+                  <Separator />
+
+                  {/* Manual Reply Section */}
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-gray-900">Manual Reply</h4>
+                    <Textarea
+                      placeholder="Or enter your reply text here..."
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      rows={8}
+                      className="font-mono text-sm"
+                    />
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={handleSubmitReply}
+                        disabled={submitting || !replyText.trim()}
+                      >
+                        {submitting ? 'Submitting...' : 'Mark as Replied'}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
           )}
 
           {/* Activity Log */}
