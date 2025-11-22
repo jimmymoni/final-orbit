@@ -10,7 +10,9 @@ import TeamDashboard from './pages/TeamDashboard';
 import InquiryDashboard from './pages/InquiryDashboard';
 import InquiryDetailPage from './pages/InquiryDetailPage';
 import AppLibraryPage from './pages/AppLibraryPage';
-import StatsPage from './pages/StatsPage';
+import EmployeesPage from './pages/EmployeesPage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
 
 // Layout
@@ -57,13 +59,12 @@ function App() {
               <Route path="/dashboard" element={<TeamDashboard />} />
               <Route path="/inquiries" element={<InquiryDashboard />} />
               <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
-              <Route path="/employees" element={<StatsPage />} />
+              <Route path="/employees" element={<EmployeesPage />} />
               <Route path="/apps" element={<AppLibraryPage />} />
               <Route path="/apps/:id" element={<AppLibraryPage />} />
-              <Route path="/knowledge" element={<StatsPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/settings" element={<StatsPage />} />
-              <Route path="/profile" element={<StatsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
 
             {/* Catch all - redirect to dashboard if logged in, otherwise home */}

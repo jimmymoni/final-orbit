@@ -33,19 +33,13 @@ const navigationItems = [
     title: 'Employees',
     href: '/employees',
     icon: Users,
-    description: 'Team members & performance',
+    description: 'Team leaderboard & rankings',
   },
   {
     title: 'Apps Library',
     href: '/apps',
     icon: AppWindow,
-    description: 'FinalApps documentation',
-  },
-  {
-    title: 'Knowledge Base',
-    href: '/knowledge',
-    icon: BookOpen,
-    description: 'Internal documentation',
+    description: 'App docs & knowledge base',
   },
 ];
 
@@ -61,13 +55,13 @@ const bottomItems = [
     title: 'Settings',
     href: '/settings',
     icon: Settings,
-    description: 'App preferences',
+    description: 'Preferences & account',
   },
   {
     title: 'Profile',
     href: '/profile',
     icon: User,
-    description: 'Your profile',
+    description: 'Profile & performance',
   },
 ];
 

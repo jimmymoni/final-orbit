@@ -11,6 +11,7 @@ import { ArrowLeft, ExternalLink, Clock, User, Calendar, AlertCircle } from 'luc
 import { formatDate, timeAgo, isOverdue } from '../lib/utils';
 import SmartReplyPanel from '../components/inquiries/SmartReplyPanel';
 import RepliesSection from '../components/inquiries/RepliesSection';
+import { toast } from 'sonner';
 
 export default function InquiryDetailPage() {
   const { id } = useParams();
@@ -82,7 +83,7 @@ export default function InquiryDetailPage() {
 
   const handleSubmitReply = async () => {
     if (!replyText.trim()) {
-      alert('Please enter a reply');
+      toast.error('Please enter a reply');
       return;
     }
 
@@ -113,15 +114,24 @@ export default function InquiryDetailPage() {
       if (updateError) throw updateError;
 
       // Calculate score
-      await supabase.rpc('calculate_reply_score', {
+      const { error: scoreError } = await supabase.rpc('calculate_reply_score', {
         p_inquiry_id: id,
         p_reply_id: reply.id,
       });
 
+      if (scoreError) {
+        console.error('Score calculation error:', scoreError);
+        toast.warning('Reply submitted but score calculation failed');
+      }
+
       // Update user stats
-      await supabase.rpc('update_user_stats', {
+      const { error: statsError } = await supabase.rpc('update_user_stats', {
         p_user_id: userProfile.id,
       });
+
+      if (statsError) {
+        console.error('Stats update error:', statsError);
+      }
 
       // Log activity
       await supabase.from('activity_log').insert([
@@ -133,11 +143,52 @@ export default function InquiryDetailPage() {
         },
       ]);
 
-      alert('Reply submitted successfully!');
-      navigate('/dashboard');
+      // Clear the reply text
+      setReplyText('');
+
+      // Refresh the inquiry data to show the new reply
+      await fetchInquiry();
+
+      // Show success message
+      toast.success('Reply submitted successfully!');
+
     } catch (error) {
       console.error('Error submitting reply:', error);
-      alert('Error submitting reply: ' + error.message);
+      toast.error('Failed to submit reply: ' + error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAssignToMe = async () => {
+    setSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('inquiries')
+        .update({
+          assigned_to: userProfile.id,
+          status: 'assigned'
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Log activity
+      await supabase.from('activity_log').insert([
+        {
+          inquiry_id: id,
+          user_id: userProfile.id,
+          type: 'reassigned',
+          message: `${userProfile.name} assigned this inquiry to themselves`,
+        },
+      ]);
+
+      // Refresh inquiry data
+      await fetchInquiry();
+      alert('Inquiry assigned to you successfully!');
+    } catch (error) {
+      console.error('Error assigning inquiry:', error);
+      alert('Error assigning inquiry: ' + error.message);
     } finally {
       setSubmitting(false);
     }
@@ -241,6 +292,31 @@ export default function InquiryDetailPage() {
 
           {/* Replies History */}
           <RepliesSection inquiryId={id} />
+
+          {/* Assign to Me Button - Shows when inquiry is not assigned to current user */}
+          {inquiry.assigned_to !== userProfile?.id && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">
+                      This inquiry is {inquiry.assigned_to ? 'assigned to someone else' : 'not assigned'}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Assign it to yourself to use the Smart Reply system and respond.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleAssignToMe}
+                    disabled={submitting}
+                    size="lg"
+                  >
+                    {submitting ? 'Assigning...' : 'Assign to Me'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Reply Section */}
           {inquiry.status === 'assigned' && inquiry.assigned_to === userProfile?.id && (
