@@ -14,6 +14,9 @@ import EmployeesPage from './pages/EmployeesPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
+import TrendsDashboardPage from './pages/TrendsDashboardPage';
+import CompetitorIntelligencePage from './pages/CompetitorIntelligencePage';
+import DevTicketsPage from './pages/DevTicketsPage';
 
 // Layout
 import AppLayout from './components/layout/AppLayout';
@@ -65,6 +68,9 @@ function App() {
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/trends" element={<TrendsDashboardPage />} />
+              <Route path="/competitors" element={<CompetitorIntelligencePage />} />
+              <Route path="/dev-tickets" element={<DevTicketsPage />} />
             </Route>
 
             {/* Catch all - redirect to dashboard if logged in, otherwise home */}

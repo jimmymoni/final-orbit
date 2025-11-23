@@ -8,7 +8,10 @@ import {
   Settings,
   Shield,
   User,
-  ChevronLeft
+  ChevronLeft,
+  TrendingUp,
+  Target,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,6 +43,24 @@ const navigationItems = [
     href: '/apps',
     icon: AppWindow,
     description: 'App docs & knowledge base',
+  },
+  {
+    title: 'Community Trends',
+    href: '/trends',
+    icon: TrendingUp,
+    description: 'Trending topics & analytics',
+  },
+  {
+    title: 'Competitor Intel',
+    href: '/competitors',
+    icon: Target,
+    description: 'Competitor intelligence',
+  },
+  {
+    title: 'Dev Tickets',
+    href: '/dev-tickets',
+    icon: FileText,
+    description: 'Auto-generated dev tickets',
   },
 ];
 
