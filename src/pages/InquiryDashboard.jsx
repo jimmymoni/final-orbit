@@ -239,17 +239,17 @@ export default function InquiryDashboard() {
             <div className="text-center py-12 text-gray-500">No inquiries found</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead>
                   <tr className="border-b border-gray-200 text-left text-sm text-gray-600">
-                    <th className="pb-3 font-medium">Title</th>
-                    <th className="pb-3 font-medium">Category</th>
-                    <th className="pb-3 font-medium">Assigned To</th>
-                    <th className="pb-3 font-medium">Status</th>
-                    <th className="pb-3 font-medium">Priority</th>
-                    <th className="pb-3 font-medium">Deadline</th>
-                    <th className="pb-3 font-medium">Created</th>
-                    <th className="pb-3 font-medium"></th>
+                    <th className="pb-3 font-medium w-[35%]">Title</th>
+                    <th className="pb-3 font-medium w-[12%]">Category</th>
+                    <th className="pb-3 font-medium w-[12%]">Assigned To</th>
+                    <th className="pb-3 font-medium w-[10%]">Status</th>
+                    <th className="pb-3 font-medium w-[8%]">Priority</th>
+                    <th className="pb-3 font-medium w-[10%]">Deadline</th>
+                    <th className="pb-3 font-medium w-[10%]">Created</th>
+                    <th className="pb-3 font-medium w-[3%]"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -259,36 +259,36 @@ export default function InquiryDashboard() {
                       onClick={() => navigate(`/inquiry/${inquiry.id}`)}
                       className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                     >
-                      <td className="py-4 font-medium text-gray-900">
+                      <td className="py-4 pr-4 font-medium text-gray-900 truncate">
                         {inquiry.title}
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm">
                         {inquiry.category || '-'}
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm truncate">
                         {inquiry.assigned_user?.name || 'Unassigned'}
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 px-2">
                         {getStatusBadge(inquiry)}
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 px-2">
                         {getPriorityBadge(inquiry.priority)}
                       </td>
-                      <td className="py-4 text-sm">
+                      <td className="py-4 px-2 text-sm whitespace-nowrap">
                         <span className={isOverdue(inquiry.deadline_at) && inquiry.status === 'assigned' ? 'text-red-600 font-medium' : 'text-gray-600'}>
                           {timeAgo(inquiry.deadline_at)}
                         </span>
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm whitespace-nowrap">
                         {timeAgo(inquiry.created_at)}
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 pl-2 text-center">
                         <a
                           href={inquiry.link}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-finalapps-blue hover:text-blue-700"
+                          className="text-finalapps-blue hover:text-blue-700 inline-block"
                         >
                           <ExternalLink className="h-4 w-4" />
                         </a>

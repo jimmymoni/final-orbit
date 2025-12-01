@@ -9,3 +9,4 @@ export { repliesModel } from './replies';
 export { appsModel } from './apps';
 export { activityModel } from './activity';
 export { knowledgeModel } from './knowledge';
+export { scraperModel } from './scraper';

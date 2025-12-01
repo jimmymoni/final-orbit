@@ -6,7 +6,8 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { Users, BookOpen, Settings, Activity } from 'lucide-react';
+import { Users, BookOpen, Settings, Activity, Download } from 'lucide-react';
+import ScraperPanel from '../components/admin/ScraperPanel';
 
 export default function AdminPage() {
   const { isAdmin } = useAuth();
@@ -78,6 +79,7 @@ export default function AdminPage() {
   const tabs = [
     { id: 'users', label: 'Users', icon: Users },
     { id: 'apps', label: 'Apps', icon: BookOpen },
+    { id: 'scraper', label: 'Scraper', icon: Download },
     { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'activity', label: 'Activity', icon: Activity },
   ];
@@ -230,6 +232,8 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       )}
+
+      {activeTab === 'scraper' && <ScraperPanel />}
 
       {activeTab === 'settings' && (
         <Card>

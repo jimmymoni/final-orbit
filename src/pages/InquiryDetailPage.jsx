@@ -27,8 +27,14 @@ export default function InquiryDetailPage() {
   useEffect(() => {
     fetchInquiry();
     fetchActivityLog();
-    fetchSuggestedApps();
   }, [id]);
+
+  // Fetch apps only after inquiry is loaded
+  useEffect(() => {
+    if (inquiry) {
+      fetchSuggestedApps();
+    }
+  }, [inquiry]);
 
   const fetchInquiry = async () => {
     try {
@@ -67,18 +73,92 @@ export default function InquiryDetailPage() {
 
   const fetchSuggestedApps = async () => {
     try {
-      // Fetch all apps for suggestions
+      // Fetch all active apps
       const { data, error } = await supabase
         .from('apps')
         .select('*')
-        .eq('status', 'active')
-        .limit(3);
+        .eq('status', 'active');
 
       if (error) throw error;
-      setSuggestedApps(data || []);
+
+      // Wait for inquiry to be loaded
+      if (!inquiry) {
+        setSuggestedApps([]);
+        return;
+      }
+
+      // Score each app based on relevance to inquiry
+      const scoredApps = (data || []).map(app => {
+        const score = calculateAppRelevance(app, inquiry);
+        return { ...app, relevanceScore: score };
+      });
+
+      // Filter apps with relevance score > 30 (decent match)
+      const relevantApps = scoredApps
+        .filter(app => app.relevanceScore > 30)
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(0, 3);
+
+      setSuggestedApps(relevantApps);
     } catch (error) {
       console.error('Error fetching apps:', error);
     }
+  };
+
+  // Calculate how relevant an app is to the inquiry
+  const calculateAppRelevance = (app, inquiry) => {
+    let score = 0;
+    const inquiryText = `${inquiry.title} ${inquiry.content}`.toLowerCase();
+    const appText = `${app.name} ${app.description || ''}`.toLowerCase();
+    const appFeatures = (app.features || []).join(' ').toLowerCase();
+
+    // Check if app name appears in inquiry
+    if (inquiryText.includes(app.name.toLowerCase())) {
+      score += 50;
+    }
+
+    // Check if inquiry mentions app-related keywords
+    const appKeywords = app.name.toLowerCase().split(' ');
+    appKeywords.forEach(keyword => {
+      if (keyword.length > 3 && inquiryText.includes(keyword)) {
+        score += 15;
+      }
+    });
+
+    // Check if app features match inquiry needs
+    (app.features || []).forEach(feature => {
+      if (inquiryText.includes(feature.toLowerCase())) {
+        score += 20;
+      }
+    });
+
+    // Check category match
+    if (inquiry.category && app.name.toLowerCase().includes(inquiry.category.toLowerCase())) {
+      score += 10;
+    }
+
+    // Check common problem keywords
+    const problemKeywords = {
+      'subscription': ['subscription', 'recurring', 'membership'],
+      'shipping': ['shipping', 'delivery', 'tracking', 'fulfillment'],
+      'discount': ['discount', 'coupon', 'sale', 'promo'],
+      'upsell': ['upsell', 'cross-sell', 'recommend'],
+      'email': ['email', 'newsletter', 'notification'],
+      'inventory': ['inventory', 'stock', 'quantity'],
+      'seo': ['seo', 'search', 'google', 'rank'],
+    };
+
+    Object.keys(problemKeywords).forEach(problem => {
+      const keywords = problemKeywords[problem];
+      const inquiryMentions = keywords.some(kw => inquiryText.includes(kw));
+      const appSolves = keywords.some(kw => appText.includes(kw) || appFeatures.includes(kw));
+
+      if (inquiryMentions && appSolves) {
+        score += 25;
+      }
+    });
+
+    return score;
   };
 
   const handleSubmitReply = async () => {
